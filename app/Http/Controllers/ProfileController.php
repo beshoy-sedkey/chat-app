@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -56,5 +57,14 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+
+    public function getOnlineUsers(){
+         if (!auth()->check()) {
+            $users = [];
+        }
+        $users = User::where('id' , '!=' , auth()->id())->get();
+
+        return response()->json(data : ['users' => $users]);
     }
 }

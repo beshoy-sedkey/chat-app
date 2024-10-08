@@ -1,7 +1,8 @@
-import './bootstrap';
+import "./bootstrap";
+import {createApp} from "vue/dist/vue.esm-bundler";
 
-import Alpine from 'alpinejs';
+import App from "@/chat/components/App.vue";
 
-window.Alpine = Alpine;
-
-Alpine.start();
+const app = createApp({});
+app.component('app', App);
+app.mount('#app');

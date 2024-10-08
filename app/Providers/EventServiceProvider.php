@@ -2,10 +2,13 @@
 
 namespace App\Providers;
 
+use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -25,8 +28,23 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        parent::boot();
+
+        Event::listen(
+            Login::class,
+            function (Login $event) {
+                Cache::put('user-online-' . $event->user->id, true, now()->addMinutes(5)); // Keep online for 5 minutes
+            }
+        );
+
+        Event::listen(
+            Logout::class,
+            function (Logout $event) {
+                Cache::forget('user-online-' . $event->user->id);
+            }
+        );
     }
+
 
     /**
      * Determine if events and listeners should be automatically discovered.
